@@ -20,7 +20,7 @@ namespace BillsAppDatabase
         public int? TransactionCategoryId { get; set; }
         public virtual TransactionCategory TransactionCategory { get; set; }
         [Required]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public virtual User User { get; set; }
         public int? PaymentTypeId { get; set; }
         public virtual PaymentType PaymentType { get; set; }

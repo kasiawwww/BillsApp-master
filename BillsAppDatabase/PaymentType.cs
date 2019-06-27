@@ -5,9 +5,18 @@ using System.Text;
 
 namespace BillsAppDatabase
 {
-    public class PaymentType :Entity
+    public enum PaymentTypeEnum
     {
-        public string Name { get; set; }
-        public virtual ICollection<Transaction> Transactions { get; set; }
+        OnlineCardPayment = 1,
+        Blik = 2,
+        Transfer = 3,
+        Paypal = 4,
+        UsmiechBabelka = 5
     }
+    public class PaymentType
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
 }

@@ -9,9 +9,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BillsApp.Data;
+using BillsAppDatabase.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using BillsAppServices;
 
 namespace BillsApp
 {
@@ -39,8 +40,10 @@ namespace BillsApp
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<BillsAppDatabase.User>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // To get user context.
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddScoped<TransactionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

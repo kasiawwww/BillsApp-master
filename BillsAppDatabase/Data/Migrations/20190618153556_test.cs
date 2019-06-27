@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BillsApp.Data.Migrations
+namespace BillsAppDatabase.Data.Migrations
 {
     public partial class test : Migration
     {

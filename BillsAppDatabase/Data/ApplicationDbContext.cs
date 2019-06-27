@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using BillsAppDatabase;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace BillsApp.Data
+namespace BillsAppDatabase.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -31,6 +34,18 @@ namespace BillsApp.Data
                 .HasOne<Tag>(sc => sc.Tag)
                 .WithMany(s => s.TransactionTags)
                 .HasForeignKey(sc => sc.TagId);
+
+            //modelBuilder
+            //    .Entity<PaymentType>()
+            //    .Property(e => e.Name)
+            //    .HasConversion(
+            //        v => v.ToString(),
+            //        v => (PaymentTypeEnum)Enum.Parse(typeof(PaymentTypeEnum), v));
+
+            modelBuilder
+                .Entity<PaymentType>()
+                .HasData(Helpers.EntitiesFromEnum
+                .BuildEntityObjectsFromEnum<PaymentType, PaymentTypeEnum>());
         }
 
         public DbSet<Budget> Budgets { get; set; }
