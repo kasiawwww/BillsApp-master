@@ -14,10 +14,12 @@ namespace BillsApp.DTOs
     public class TransactionDTO: Transaction
     {
         //private readonly UserManager<User> _userManager;
-        //private readonly HttpContextAccessor _httpContextAccessor;
-        public TransactionDTO()
+        private readonly HttpContextAccessor _httpContextAccessor;
+
+        public TransactionDTO(HttpContextAccessor httpContextAccessor)
         {
-            UserId = _HttpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;//_userManager.GetUserId(HttpContext.User);
+            _httpContextAccessor = httpContextAccessor;
+            UserId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;//_userManager.GetUserId(HttpContext.User);
             CreateDate = DateTime.Now;
             ModificationDate = DateTime.Now;
 

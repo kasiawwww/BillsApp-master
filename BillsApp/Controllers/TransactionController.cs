@@ -70,7 +70,7 @@ namespace BillsApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,TransactionDate,CreateDate,ModificationDate,Price,TransactionCategoryId,UserId,PaymentTypeId,Id")] TransactionDTO transactionDTO)
+        public async Task<IActionResult> Create([FromBody]TransactionDTO transactionDTO)
         {
             var transaction = new Transaction();
             if (ModelState.IsValid)
