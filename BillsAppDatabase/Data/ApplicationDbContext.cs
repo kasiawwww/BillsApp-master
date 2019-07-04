@@ -46,11 +46,17 @@ namespace BillsAppDatabase.Data
                 .Entity<PaymentType>()
                 .HasData(Helpers.EntitiesFromEnum
                 .BuildEntityObjectsFromEnum<PaymentType, PaymentTypeEnum>());
+
+            modelBuilder
+                .Entity<Unit>()
+                .HasData(Helpers.EntitiesFromEnum
+                .BuildEntityObjectsFromEnum<Unit, UnitEnum>());
         }
 
         public DbSet<Budget> Budgets { get; set; }
         public DbSet<File> Files { get; set; }
         public DbSet<PaymentType> PaymentTypes { get; set; }
+        public DbSet<Unit> Units { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Transaction> Transactions { get; set; }

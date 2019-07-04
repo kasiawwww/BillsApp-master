@@ -4,14 +4,16 @@ using BillsAppDatabase.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BillsAppDatabase.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190703181028_unit_enum")]
+    partial class unit_enum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,11 +89,9 @@ namespace BillsAppDatabase.Data.Migrations
                     b.ToTable("PaymentTypes");
 
                     b.HasData(
-                        new { Id = 1, Name = "OnlineCardPayment" },
-                        new { Id = 2, Name = "Blik" },
-                        new { Id = 3, Name = "Transfer" },
-                        new { Id = 4, Name = "Paypal" },
-                        new { Id = 5, Name = "UsmiechBabelka" }
+                        new { Id = 1, Name = "Item" },
+                        new { Id = 2, Name = "Kg" },
+                        new { Id = 3, Name = "Litr" }
                     );
                 });
 
@@ -224,12 +224,6 @@ namespace BillsAppDatabase.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Units");
-
-                    b.HasData(
-                        new { Id = 1, Name = "Item" },
-                        new { Id = 2, Name = "Kg" },
-                        new { Id = 3, Name = "Litr" }
-                    );
                 });
 
             modelBuilder.Entity("BillsAppDatabase.User", b =>

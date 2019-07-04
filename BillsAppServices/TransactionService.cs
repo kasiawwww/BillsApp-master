@@ -1,11 +1,11 @@
 ﻿using BillsAppDatabase;
 using BillsAppDatabase.Data;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-
+using System.Web;
+using System.Security.Claims;
 
 namespace BillsAppServices
 {
@@ -13,38 +13,46 @@ namespace BillsAppServices
     {
         private readonly ApplicationDbContext _context;
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public TransactionService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+        public TransactionService(ApplicationDbContext context)
         {
             _context = context;
-            _httpContextAccessor = httpContextAccessor;
-
         }
+
         public void AddTransaction(Transaction transaction)
         {
-            var transactionCategories = _context.TransactionCategories.Where(t => t.Name != null);
-
             _context.Add(transaction);
             _context.SaveChanges();           
         }
 
-        public List<Transaction> GetTransactions()
+        public void EditTransaction(Transaction transaction)
         {
-            var transactions = _context.Transactions.Include(t => t.PaymentType).Include(t => t.TransactionCategory);
-            return transactions.ToList();
+            _context.Update(transaction);
+            _context.SaveChanges();
+        }
+
+        public void DeleteTransaction(int id)
+        {
+            var transaction = _context.Transactions.Find(id);
+            _context.Transactions.Remove(transaction);
+            _context.SaveChangesAsync();
+        }
+
+        public DbSet<Transaction> GetTransactions()
+        {
+            var transactions = _context.Transactions;//.Include(t => t.PaymentType).Include(t => t.TransactionCategory);
+            return transactions;
 
         }
 
-        public List<PaymentType> GetPaymentTypes()
+        public DbSet<PaymentType> GetPaymentTypes()
         {
-            var paymentTypes = new SelectList(_context.PaymentTypes, "Id", "Id");
+            var paymentTypes = _context.PaymentTypes;
             return paymentTypes;
         }
 
-        public List<TransactionCategory> GetTransactionCategories()
+        public DbSet<TransactionCategory> GetTransactionCategories()
         {
-            var transactionCategories = _context.TransactionCategories.Where(t => t.Name != null).ToList();
+            var transactionCategories = _context.TransactionCategories;
             return transactionCategories;
         }
     }

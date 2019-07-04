@@ -10,24 +10,30 @@ using BillsAppDatabase;
 using BillsAppServices;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using BillsApp.DTOs;
 
 namespace BillsApp.Controllers
 {
+    [Authorize]
     public class TransactionController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private TransactionService _transactionService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly TransactionService _transactionService;
+        private readonly TransactionCategoryService _transactionCategoryService;
+        private readonly PaymentTypeService _paymentTypeService;
 
-        public TransactionController(TransactionService transactionService)
+        public TransactionController(TransactionService transactionService, TransactionCategoryService transactionCategoryService, PaymentTypeService paymentTypeService, UserManager<User> userManager)
         {
             _transactionService = transactionService;
+            _transactionCategoryService = transactionCategoryService;
+            _paymentTypeService = paymentTypeService;
         }
 
         // GET: Transaction
         public async Task<IActionResult> Index()
         {
-            return View(_transactionService.GetTransactions());
+            return View(_transactionService.GetTransactions().ToList());
         }
 
         // GET: Transaction/Details/5
@@ -38,7 +44,7 @@ namespace BillsApp.Controllers
                 return NotFound();
             }
 
-            var transaction = await _context.Transactions
+            var transaction = await _transactionService.GetTransactions()
                 .Include(t => t.PaymentType)
                 .Include(t => t.TransactionCategory)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -53,10 +59,8 @@ namespace BillsApp.Controllers
         // GET: Transaction/Create
         public IActionResult Create()
         {
-            ViewData["PaymentTypeId"] = _transactionService.GetPaymentTypes();
-            ViewData["TransactionCategoryId"] = _transactionService.GetTransactionCategories(); //new SelectList(_context.TransactionCategories, "Id", "Name", transaction.TransactionCategoryId);
-            //ViewData["PaymentTypeId"] = new SelectList(_context.PaymentTypes, "Id", "Id");
-            //ViewData["TransactionCategoryId"] = new SelectList(_context.TransactionCategories, "Id", "Name");
+            ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name");
+            ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name");
             return View();
         }
 
@@ -65,16 +69,19 @@ namespace BillsApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,TransactionDate,CreateDate,ModificationDate,Price,TransactionCategoryId,UserId,PaymentTypeId,Id")] Transaction transaction)
+        public async Task<IActionResult> Create([Bind("Name,Description,TransactionDate,CreateDate,ModificationDate,Price,TransactionCategoryId,UserId,PaymentTypeId,Id")] TransactionDTO transactionDTO)
         {
+            var transaction = new Transaction();
             if (ModelState.IsValid)
             {
-                transaction.UserId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                //transaction.UserId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                Mapper.CreateMap<TransactionDTO, Transaction>();
+                transaction = Mapper.Map<TransactionDTO, Transaction>(transactionDTO);
                 _transactionService.AddTransaction(transaction);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PaymentTypeId"] = _transactionService.GetPaymentTypes();
-            ViewData["TransactionCategoryId"] = _transactionService.GetTransactionCategories(); //new SelectList(_context.TransactionCategories, "Id", "Name", transaction.TransactionCategoryId);
+            ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transaction.PaymentTypeId);
+            ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transaction.TransactionCategoryId);
             return View(transaction);
         }
 
@@ -86,13 +93,13 @@ namespace BillsApp.Controllers
                 return NotFound();
             }
 
-            var transaction = await _context.Transactions.FindAsync(id);
+            var transaction = await _transactionService.GetTransactions().FindAsync(id);
             if (transaction == null)
             {
                 return NotFound();
             }
-            ViewData["PaymentTypeId"] = new SelectList(_context.PaymentTypes, "Id", "Id", transaction.PaymentTypeId);
-            ViewData["TransactionCategoryId"] = new SelectList(_context.TransactionCategories, "Id", "Name", transaction.TransactionCategoryId);
+            ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transaction.PaymentTypeId);
+            ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transaction.TransactionCategoryId);
             return View(transaction);
         }
 
@@ -112,8 +119,7 @@ namespace BillsApp.Controllers
             {
                 try
                 {
-                    _context.Update(transaction);
-                    await _context.SaveChangesAsync();
+                    _transactionService.EditTransaction(transaction);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -128,8 +134,8 @@ namespace BillsApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PaymentTypeId"] = new SelectList(_context.PaymentTypes, "Id", "Id", transaction.PaymentTypeId);
-            ViewData["TransactionCategoryId"] = new SelectList(_context.TransactionCategories, "Id", "Name", transaction.TransactionCategoryId);
+            ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transaction.PaymentTypeId);
+            ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transaction.TransactionCategoryId);
             return View(transaction);
         }
 
@@ -141,7 +147,7 @@ namespace BillsApp.Controllers
                 return NotFound();
             }
 
-            var transaction = await _context.Transactions
+            var transaction = await _transactionService.GetTransactions()
                 .Include(t => t.PaymentType)
                 .Include(t => t.TransactionCategory)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -158,15 +164,13 @@ namespace BillsApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var transaction = await _context.Transactions.FindAsync(id);
-            _context.Transactions.Remove(transaction);
-            await _context.SaveChangesAsync();
+            _transactionService.DeleteTransaction(id);
             return RedirectToAction(nameof(Index));
         }
 
         private bool TransactionExists(int id)
         {
-            return _context.Transactions.Any(e => e.Id == id);
+            return _transactionService.GetTransactions().Any(e => e.Id == id);
         }
     }
 }
