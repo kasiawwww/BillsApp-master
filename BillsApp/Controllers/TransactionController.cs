@@ -13,6 +13,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using BillsApp.DTOs;
+using AutoMapper;
 
 namespace BillsApp.Controllers
 {
@@ -75,8 +76,7 @@ namespace BillsApp.Controllers
             if (ModelState.IsValid)
             {
                 //transaction.UserId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                Mapper.CreateMap<TransactionDTO, Transaction>();
-                transaction = Mapper.Map<TransactionDTO, Transaction>(transactionDTO);
+                transaction = Mapper.Map<Transaction>(transactionDTO);
                 _transactionService.AddTransaction(transaction);
                 return RedirectToAction(nameof(Index));
             }

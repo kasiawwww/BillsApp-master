@@ -13,6 +13,9 @@ using BillsAppDatabase.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BillsAppServices;
+using AutoMapper;
+using BillsAppDatabase;
+using BillsApp.DTOs;
 
 namespace BillsApp
 {
@@ -21,6 +24,14 @@ namespace BillsApp
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            var _configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<TransactionDTO, Transaction>();
+            });
+            // only during development, validate your mappings; remove it before release
+            _configuration.AssertConfigurationIsValid();
+            // use DI (http://docs.automapper.org/en/latest/Dependency-injection.html) or create the mapper yourself
+            var mapper = _configuration.CreateMapper();
         }
 
         public IConfiguration Configuration { get; }
@@ -76,5 +87,6 @@ namespace BillsApp
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
     }
 }

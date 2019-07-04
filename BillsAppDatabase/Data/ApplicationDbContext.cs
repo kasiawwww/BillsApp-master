@@ -11,11 +11,12 @@ namespace BillsAppDatabase.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
+        public IHttpContextAccessor _HttpContextAccessor;
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor)
             : base(options)
         {
-
+            _HttpContextAccessor = httpContextAccessor;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
