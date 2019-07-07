@@ -7,23 +7,25 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BillsAppDatabase.Data;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace BillsApp.DTOs
 {
-    public class TransactionDTO: Transaction
+    public class TransactionDTO
     {
-        //private readonly UserManager<User> _userManager;
-        private readonly HttpContextAccessor _httpContextAccessor;
+        [Required]
+        public string Name { get; set; }
 
-        public TransactionDTO(HttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            UserId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;//_userManager.GetUserId(HttpContext.User);
-            CreateDate = DateTime.Now;
-            ModificationDate = DateTime.Now;
+        public string Description { get; set; }
 
-        }
+        [Required]
+        public DateTime TransactionDate { get; set; }
+
+        [Required]
+        public decimal Price { get; set; }
+        public int? TransactionCategoryId { get; set; }
+
+        public int? PaymentTypeId { get; set; }
 
     }
 }

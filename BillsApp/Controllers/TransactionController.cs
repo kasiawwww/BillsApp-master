@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using BillsApp.DTOs;
 using AutoMapper;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace BillsApp.Controllers
 {
@@ -23,12 +24,14 @@ namespace BillsApp.Controllers
         private readonly TransactionService _transactionService;
         private readonly TransactionCategoryService _transactionCategoryService;
         private readonly PaymentTypeService _paymentTypeService;
+        private readonly IMapper _mapper;
 
-        public TransactionController(TransactionService transactionService, TransactionCategoryService transactionCategoryService, PaymentTypeService paymentTypeService, UserManager<User> userManager)
+        public TransactionController(TransactionService transactionService, TransactionCategoryService transactionCategoryService, PaymentTypeService paymentTypeService, IMapper mapper)
         {
             _transactionService = transactionService;
             _transactionCategoryService = transactionCategoryService;
             _paymentTypeService = paymentTypeService;
+            _mapper = mapper;
         }
 
         // GET: Transaction
@@ -70,19 +73,18 @@ namespace BillsApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromBody]TransactionDTO transactionDTO)
+        public RedirectToActionResult Create(TransactionDTO transactionDTO)
         {
-            var transaction = new Transaction();
+            Transaction transaction = new Transaction();
             if (ModelState.IsValid)
-            {
-                //transaction.UserId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                transaction = Mapper.Map<Transaction>(transactionDTO);
+            {                
+                transaction = _mapper.Map<Transaction>(transactionDTO);
                 _transactionService.AddTransaction(transaction);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index","TransactionElement", new { transactionId = transaction.Id }) ;
             }
             ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transaction.PaymentTypeId);
             ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transaction.TransactionCategoryId);
-            return View(transaction);
+            return RedirectToAction("Create", "Transaction");
         }
 
         // GET: Transaction/Edit/5
@@ -93,7 +95,7 @@ namespace BillsApp.Controllers
                 return NotFound();
             }
 
-            var transaction = await _transactionService.GetTransactions().FindAsync(id);
+            var transaction = await _transactionService.GetTransactions().FirstAsync(t => t.Id == id);
             if (transaction == null)
             {
                 return NotFound();

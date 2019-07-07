@@ -6,20 +6,32 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Web;
 using System.Security.Claims;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Linq;
 
 namespace BillsAppServices
 {
     public class TransactionService
     {
         private readonly ApplicationDbContext _context;
+        private IHttpContextAccessor _httpContextAccessor;
 
-        public TransactionService(ApplicationDbContext context)
+        public TransactionService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public string GetCurrentUserId()
+        {
+            return _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
 
         public void AddTransaction(Transaction transaction)
         {
+            transaction.UserId = GetCurrentUserId();
+            transaction.CreateDate = DateTime.Now;
+            transaction.ModificationDate = DateTime.Now;
             _context.Add(transaction);
             _context.SaveChanges();           
         }
@@ -37,23 +49,13 @@ namespace BillsAppServices
             _context.SaveChangesAsync();
         }
 
-        public DbSet<Transaction> GetTransactions()
+        public IQueryable<Transaction> GetTransactions()
         {
-            var transactions = _context.Transactions;//.Include(t => t.PaymentType).Include(t => t.TransactionCategory);
+            var transactions = _context.Transactions.Where(t => t.UserId == GetCurrentUserId());//.Include(t => t.PaymentType).Include(t => t.TransactionCategory);
             return transactions;
 
         }
 
-        public DbSet<PaymentType> GetPaymentTypes()
-        {
-            var paymentTypes = _context.PaymentTypes;
-            return paymentTypes;
-        }
 
-        public DbSet<TransactionCategory> GetTransactionCategories()
-        {
-            var transactionCategories = _context.TransactionCategories;
-            return transactionCategories;
-        }
     }
 }

@@ -7,6 +7,9 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.1.1" />
+    <PackageReference Include="Bower" Version="1.3.11" />
+    <PackageReference Include="KendoUICore" Version="2019.2.619" />
+    <PackageReference Include="KendoUIWeb" Version="2014.1.318" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />

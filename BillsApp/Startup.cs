@@ -16,6 +16,7 @@ using BillsAppServices;
 using AutoMapper;
 using BillsAppDatabase;
 using BillsApp.DTOs;
+using BillsApp.Mappings;
 
 namespace BillsApp
 {
@@ -24,14 +25,6 @@ namespace BillsApp
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            var _configuration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<TransactionDTO, Transaction>();
-            });
-            // only during development, validate your mappings; remove it before release
-            _configuration.AssertConfigurationIsValid();
-            // use DI (http://docs.automapper.org/en/latest/Dependency-injection.html) or create the mapper yourself
-            var mapper = _configuration.CreateMapper();
         }
 
         public IConfiguration Configuration { get; }
@@ -51,12 +44,24 @@ namespace BillsApp
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<BillsAppDatabase.User>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // To get user context.
+
+            // Start Registering and Initializing AutoMapper
+            // Auto Mapper Configurations
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             services.AddScoped<TransactionService>();
             services.AddScoped<TransactionCategoryService>();
             services.AddScoped<PaymentTypeService>();
+
 
         }
 

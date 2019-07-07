@@ -22,19 +22,10 @@
                 @Html.DisplayNameFor(model => model.TransactionDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreateDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ModificationDate)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Price)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.TransactionCategory)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserId)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.PaymentType)
@@ -55,22 +46,13 @@
                 @Html.DisplayFor(modelItem => item.TransactionDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreateDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ModificationDate)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TransactionCategory.Name)
+                @Html.DisplayFor(modelItem => item.TransactionCategoryId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentType.Id)
+                @Html.DisplayFor(modelItem => item.PaymentTypeId)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
