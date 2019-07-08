@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BillsAppDatabase;
 using BillsAppDatabase.Data;
+using BillsApp.DTOs;
 
 namespace BillsApp.Controllers
 {
@@ -46,10 +47,11 @@ namespace BillsApp.Controllers
         }
 
         // GET: TransactionElement/Create
-        public IActionResult Create()
+        public IActionResult Create(int transactionId)
         {
-            ViewData["TransactionId"] = new SelectList(_context.Transactions, "Id", "Name");
-            return View();
+            var applicationDbContext = _context.TransactionElements.Include(t => t.Transaction).Where(t => t.TransactionId == transactionId);
+            return View(applicationDbContext);
+
         }
 
         // POST: TransactionElement/Create
@@ -57,16 +59,17 @@ namespace BillsApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TransactionId,Price,Amount,Id")] TransactionElement transactionElement)
+        public JsonResult Create(List<TransactionElementDTO> elements)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(transactionElement);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["TransactionId"] = new SelectList(_context.Transactions, "Id", "Name", transactionElement.TransactionId);
-            return View(transactionElement);
+            //  if (ModelState.IsValid)
+            //  {
+            //      _context.Add(transactionElements);
+            //      await _context.SaveChangesAsync();
+            //      return RedirectToAction(nameof(Index));
+            //  }
+            ////  ViewData["TransactionId"] = new SelectList(_context.Transactions, "Id", "Name", transactionElements.TransactionId);
+            //  return View();
+            return Json(new { tr = 1 });
         }
 
         // GET: TransactionElement/Edit/5

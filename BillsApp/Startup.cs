@@ -17,6 +17,8 @@ using AutoMapper;
 using BillsAppDatabase;
 using BillsApp.DTOs;
 using BillsApp.Mappings;
+using Newtonsoft.Json.Serialization;
+
 
 namespace BillsApp
 {
@@ -55,12 +57,15 @@ namespace BillsApp
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                    .AddJsonOptions(options =>
+                     options.SerializerSettings.ContractResolver = new DefaultContractResolver());
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddScoped<TransactionService>();
             services.AddScoped<TransactionCategoryService>();
             services.AddScoped<PaymentTypeService>();
+            services.AddKendo();
 
 
         }
@@ -84,7 +89,7 @@ namespace BillsApp
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-
+            app.UseKendo(env);
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

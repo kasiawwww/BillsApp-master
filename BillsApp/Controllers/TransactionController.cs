@@ -80,7 +80,7 @@ namespace BillsApp.Controllers
             {                
                 transaction = _mapper.Map<Transaction>(transactionDTO);
                 _transactionService.AddTransaction(transaction);
-                return RedirectToAction("Index","TransactionElement", new { transactionId = transaction.Id }) ;
+                return RedirectToAction("Create","TransactionElement", new { transactionId = transaction.Id }) ;
             }
             ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transaction.PaymentTypeId);
             ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transaction.TransactionCategoryId);
