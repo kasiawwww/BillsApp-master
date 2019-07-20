@@ -15,6 +15,10 @@ namespace BillsApp.Mappings
             // Add as many of these lines as you need to map your objects
             CreateMap<Transaction, TransactionDTO>();
             CreateMap<TransactionDTO, Transaction>();
+            CreateMap<TransactionElement, TransactionElementDTO>();
+            CreateMap<TransactionElementDTO, TransactionElement>();
+            CreateMap<File, FileDTO>();
+            CreateMap<FileDTO, File>();
         }
     }
 }

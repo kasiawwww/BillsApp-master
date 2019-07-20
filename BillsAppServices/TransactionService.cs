@@ -27,13 +27,14 @@ namespace BillsAppServices
             return _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
 
-        public void AddTransaction(Transaction transaction)
+        public void AddTransaction(Transaction transaction, out int transactionId)
         {
             transaction.UserId = GetCurrentUserId();
             transaction.CreateDate = DateTime.Now;
             transaction.ModificationDate = DateTime.Now;
             _context.Add(transaction);
-            _context.SaveChanges();           
+            _context.SaveChanges();
+            transactionId = transaction.Id;
         }
 
         public void EditTransaction(Transaction transaction)
@@ -53,6 +54,13 @@ namespace BillsAppServices
         {
             var transactions = _context.Transactions.Where(t => t.UserId == GetCurrentUserId());//.Include(t => t.PaymentType).Include(t => t.TransactionCategory);
             return transactions;
+
+        }
+
+        public IQueryable<Transaction> GetTransactionById(int transactionId)
+        {
+            var transaction = _context.Transactions.Where(t => t.Id == transactionId);
+            return transaction;
 
         }
 

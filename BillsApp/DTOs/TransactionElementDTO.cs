@@ -9,10 +9,12 @@ namespace BillsApp.DTOs
     public class TransactionElementDTO
     {
         [Required]
-        public string Product { get; set; }
+        public string ProductName { get; set; }
         [Required]
         public decimal Price { get; set; }
         [Required]
         public int Amount { get; set; }
+        [Required]
+        public string Unit { get; set; }
     }
 }

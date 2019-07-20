@@ -65,6 +65,8 @@ namespace BillsApp
             services.AddScoped<TransactionService>();
             services.AddScoped<TransactionCategoryService>();
             services.AddScoped<PaymentTypeService>();
+            services.AddScoped<UnitService>();
+
             services.AddKendo();
 
 
@@ -89,7 +91,6 @@ namespace BillsApp
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-            app.UseKendo(env);
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

@@ -25,7 +25,7 @@ namespace BillsAppDatabase
         public int? PaymentTypeId { get; set; }
         public virtual PaymentType PaymentType { get; set; }
         public virtual ICollection<TransactionTag> TransactionTags { get; set; }
-        public virtual ICollection<TransactionElement> TransactionElements { get; set; }
+        public virtual ICollection<TransactionElement> TransactionElements { get; set; }     
         public virtual ICollection<File> Files { get; set; }
     }
 }

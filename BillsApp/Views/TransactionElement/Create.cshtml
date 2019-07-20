@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BillsAppDatabase.TransactionElement>
+﻿@model IEnumerable<BillsApp.DTOs.TransactionElementDTO>
 
 @{
     ViewData["Title"] = "Create";
@@ -20,7 +20,7 @@
         @foreach (var item in Model)
         {
         <tr>
-            <td>@item.Product</td>
+            <td>@item.ProductName</td>
             <td>@item.Price</td>
             <td>@item.Amount</td>
             <td><input type="button" value="Remove" onclick="Remove(this)" /></td>

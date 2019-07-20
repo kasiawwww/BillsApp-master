@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.1.1" />
-    <PackageReference Include="Bower" Version="1.3.11" />
+    <PackageReference Include="bootstrap" Version="4.3.1" />
     <PackageReference Include="KendoUICore" Version="2019.2.619" />
     <PackageReference Include="KendoUIWeb" Version="2014.1.318" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
@@ -25,6 +25,10 @@
   <ItemGroup>
     <ProjectReference Include="..\BillsAppDatabase\BillsAppDatabase.csproj" />
     <ProjectReference Include="..\BillsAppServices\BillsAppServices.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Services\" />
   </ItemGroup>
 
 </Project>

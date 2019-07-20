@@ -27,5 +27,16 @@ namespace BillsApp.DTOs
 
         public int? PaymentTypeId { get; set; }
 
+        public List<TransactionElementDTO> Elements { get; set; }
+
+        [Required]
+        public List<FileDTO> Files { get; set; }
+
+        public TransactionDTO()
+        {
+            Files = new List<FileDTO>();
+            Elements = new List<TransactionElementDTO>();
+        }
+
     }
 }
