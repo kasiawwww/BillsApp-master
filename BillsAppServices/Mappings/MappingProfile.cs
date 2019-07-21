@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BillsApp.DTOs;
 using BillsAppDatabase;
+using BillsAppServices.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,8 @@ namespace BillsApp.Mappings
             CreateMap<TransactionElementDTO, TransactionElement>();
             CreateMap<File, FileDTO>();
             CreateMap<FileDTO, File>();
+            CreateMap<TransactionCategory, TransactionCategoryDTO>();
+            CreateMap<TransactionCategoryDTO, TransactionCategory>();
         }
     }
 }

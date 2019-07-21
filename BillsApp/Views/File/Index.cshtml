@@ -17,7 +17,7 @@
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.ImageFile)
+                    @Html.DisplayNameFor(model => model.FileScreenShot)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.TransactionId)
@@ -33,7 +33,7 @@
                         @Html.DisplayFor(modelItem => item.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.ImageFile)
+                        <img class="imageSize" src="data:image/png;base64, @item.FileScreenShot" alt="Brak obrazka" />
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.TransactionId)

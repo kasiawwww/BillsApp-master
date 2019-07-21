@@ -17,47 +17,26 @@ namespace BillsApp.Controllers
 {
     public class FileController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly TransactionService _transactionService;
-        private readonly IMapper _mapper;
+        private readonly FileService _fileService;
 
-        public FileController(ApplicationDbContext context, TransactionService transactionService, IMapper mapper)
+        public FileController(ApplicationDbContext context, TransactionService transactionService, FileService fileService,IMapper mapper)
         {
-            _context = context;
             _transactionService = transactionService;
-            _mapper = mapper;
+            _fileService = fileService;
+           
         }
 
         // GET: File
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? id)
         {
             List<FileDTO> filesDTO = new List<FileDTO>();
-            var applicationDbContext = _context.Files.Include(f => f.Transaction);
-            foreach(var item in applicationDbContext)
-            {
-                filesDTO.Add(_mapper.Map<FileDTO>(item));
-            }
-                
-            return View(filesDTO);
-        }
-
-        // GET: File/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
             if (id == null)
-            {
-                return NotFound();
-            }
-
-            var file = await _context.Files
-                .Include(f => f.Transaction)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (file == null)
-            {
-                return NotFound();
-            }
-
-            return View(file);
+                filesDTO = _fileService.GetFilesForUser();
+            else
+                filesDTO = _fileService.GetFilesForTransaction((int)id);
+  
+            return View(filesDTO);
         }
 
         // GET: File/Create
@@ -74,39 +53,33 @@ namespace BillsApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name, FileScreenShot, ImageFile,TransactionId,Id")] FileDTO fileDTO)
         {
-            File file = new File();
             if (fileDTO.ImageFile == null || fileDTO.ImageFile.Length == 0)
                 return View(fileDTO);
 
-            await convertToBase64Async(fileDTO);
-
             if (ModelState.IsValid)
             {
-                file = _mapper.Map<File>(fileDTO);
-                _context.Add(file);
-                _context.SaveChanges();
+                _fileService.AddFiles(fileDTO);
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["CategoryId"] = new SelectList(_context.Set<CategoryDTO>(), "ID", "Name", recipesDTO.CategoryId);
             return View(fileDTO);
         }
 
-        // GET: File/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: File/Edit/5
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var file = await _context.Files.FindAsync(id);
-            if (file == null)
-            {
-                return NotFound();
-            }
-            ViewData["TransactionId"] = new SelectList(_context.Transactions, "Id", "Name", file.TransactionId);
-            return View(file);
-        }
+        //    var file = await _context.Files.FindAsync(id);
+        //    if (file == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ViewData["TransactionId"] = new SelectList(_context.Transactions, "Id", "Name", file.TransactionId);
+        //    return View(file);
+        //}
 
         // POST: File/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -144,51 +117,41 @@ namespace BillsApp.Controllers
         //    return View(file);
         //}
 
-        // GET: File/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: File/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var file = await _context.Files
-                .Include(f => f.Transaction)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (file == null)
-            {
-                return NotFound();
-            }
+        //    var file = await _context.Files
+        //        .Include(f => f.Transaction)
+        //        .FirstOrDefaultAsync(m => m.Id == id);
+        //    if (file == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(file);
-        }
+        //    return View(file);
+        //}
 
-        // POST: File/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var file = await _context.Files.FindAsync(id);
-            _context.Files.Remove(file);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //// POST: File/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var file = await _context.Files.FindAsync(id);
+        //    _context.Files.Remove(file);
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
-        private bool FileExists(int id)
-        {
-            return _context.Files.Any(e => e.Id == id);
-        }
+        //private bool FileExists(int id)
+        //{
+        //    return _context.Files.Any(e => e.Id == id);
+        //}
 
-        private static async Task convertToBase64Async(FileDTO fileDTO)
-        {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileDTO.ImageFile.FileName);
 
-            using (var stream = new FileStream(path, FileMode.Create))
-            {
-                await fileDTO.ImageFile.CopyToAsync(stream);
-            }
-            var byteArray = await System.IO.File.ReadAllBytesAsync(path);
-            fileDTO.FileScreenShot = Convert.ToBase64String(byteArray);
-        }
     }
 }

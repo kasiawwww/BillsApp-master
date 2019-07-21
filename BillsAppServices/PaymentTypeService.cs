@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BillsAppServices
@@ -24,5 +25,10 @@ namespace BillsAppServices
             return paymentTypes;
         }
 
+        public PaymentType GetPaymentType(int paymentTypeId)
+        {
+            var paymentType = _context.PaymentTypes.Where(p => p.Id == paymentTypeId).FirstOrDefault();
+            return paymentType;
+        }
     }
 }

@@ -8,6 +8,8 @@ using System.Web;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Linq;
+using AutoMapper;
+using BillsApp.DTOs;
 
 namespace BillsAppServices
 {
@@ -15,20 +17,24 @@ namespace BillsAppServices
     {
         private readonly ApplicationDbContext _context;
         private IHttpContextAccessor _httpContextAccessor;
+        private readonly IMapper _mapper;
 
-        public TransactionService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+        public TransactionService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _mapper = mapper;
         }
 
-        public string GetCurrentUserId()
+        private string GetCurrentUserId()
         {
             return _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
 
-        public void AddTransaction(Transaction transaction, out int transactionId)
+        public void AddTransaction(TransactionDTO transactionDTO, out int transactionId)
         {
+            Transaction transaction = new Transaction();
+            transaction = _mapper.Map<Transaction>(transactionDTO);
             transaction.UserId = GetCurrentUserId();
             transaction.CreateDate = DateTime.Now;
             transaction.ModificationDate = DateTime.Now;

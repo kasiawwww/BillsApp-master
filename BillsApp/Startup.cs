@@ -66,6 +66,7 @@ namespace BillsApp
             services.AddScoped<TransactionCategoryService>();
             services.AddScoped<PaymentTypeService>();
             services.AddScoped<UnitService>();
+            services.AddScoped<FileService>();
 
             services.AddKendo();
 

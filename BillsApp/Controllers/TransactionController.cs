@@ -39,28 +39,36 @@ namespace BillsApp.Controllers
         // GET: Transaction
         public async Task<IActionResult> Index()
         {
-            return View(_transactionService.GetTransactions().ToList());
+            var transactions = _transactionService.GetTransactions().ToList();
+            foreach (var item in transactions)
+            {
+                if (item.PaymentTypeId != null)
+                    item.PaymentType = _paymentTypeService.GetPaymentType((int)item.PaymentTypeId);
+                if (item.TransactionCategoryId != null)
+                    item.TransactionCategory = _transactionCategoryService.GetTransactionCategory((int)item.TransactionCategoryId);
+            }
+            return View(transactions);
         }
 
-        // GET: Transaction/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: Transaction/Details/5
+        //public async Task<IActionResult> Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var transaction = await _transactionService.GetTransactions()
-                .Include(t => t.PaymentType)
-                .Include(t => t.TransactionCategory)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (transaction == null)
-            {
-                return NotFound();
-            }
+        //    var transaction = await _transactionService.GetTransactions()
+        //        .Include(t => t.PaymentType)
+        //        .Include(t => t.TransactionCategoryDTO)
+        //        .FirstOrDefaultAsync(m => m.Id == id);
+        //    if (transaction == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(transaction);
-        }
+        //    return View(transaction);
+        //}
 
         // GET: Transaction/Create
         public IActionResult Create()
@@ -77,15 +85,14 @@ namespace BillsApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(TransactionDTO transactionDTO)
         {
-            Transaction transaction = new Transaction();
             int transactionId;
             List<TransactionElement> transactionElementsList = new List<TransactionElement>();
             if (Request.Form["AddElement"].Any())
             {
                 //Dodawanie elemetu do listy
                 transactionDTO.Elements.Add(new TransactionElementDTO());
-                ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transaction.PaymentTypeId);
-                ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transaction.TransactionCategoryId);
+                ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transactionDTO.PaymentType);
+                ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transactionDTO.TransactionCategory);
                 foreach (var item in transactionDTO.Elements)
                     ViewBag.Units = new SelectList(_unitService.GetUnits(), "Id", "Name");
             }
@@ -93,23 +100,11 @@ namespace BillsApp.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    transaction = _mapper.Map<Transaction>(transactionDTO);
-
-                    //foreach (var item in transactionDTO.Elements)
-                    //    transactionElementsList.Add(_mapper.Map<Product>(item.Product));
-
-                    //foreach (var item in transactionDTO.Elements)
-                    //    transactionElementsList.Add(_mapper.Map<TransactionElement>(item));
-
-                    //foreach (var item in transactionElementsList)
-                    //    item.TransactionId = transaction.Id;
-
-                    _transactionService.AddTransaction(transaction, out transactionId);
-                    //TempData["transactionId"] = transactionId;
+                    _transactionService.AddTransaction(transactionDTO, out transactionId);
                     return RedirectToAction("Create", "File", new { transactionId = transactionId });
                 }
-                ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transaction.PaymentTypeId);
-                ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transaction.TransactionCategoryId);
+                ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transactionDTO.PaymentType);
+                ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transactionDTO.TransactionCategory);
             }
 
             return View(transactionDTO);           
@@ -134,75 +129,75 @@ namespace BillsApp.Controllers
             return View(transaction);
         }
 
-        // POST: Transaction/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Name,Description,TransactionDate,CreateDate,ModificationDate,Price,TransactionCategoryId,UserId,PaymentTypeId,Id")] Transaction transaction)
-        {
-            if (id != transaction.Id)
-            {
-                return NotFound();
-            }
+        //// POST: Transaction/Edit/5
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("Name,Description,TransactionDate,CreateDate,ModificationDate,Price,TransactionCategoryId,UserId,PaymentTypeId,Id")] Transaction transaction)
+        //{
+        //    if (id != transaction.Id)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _transactionService.EditTransaction(transaction);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TransactionExists(transaction.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transaction.PaymentTypeId);
-            ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transaction.TransactionCategoryId);
-            return View(transaction);
-        }
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _transactionService.EditTransaction(transaction);
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!TransactionExists(transaction.Id))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transaction.PaymentTypeId);
+        //    ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transaction.TransactionCategoryId);
+        //    return View(transaction);
+        //}
 
-        // GET: Transaction/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: Transaction/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var transaction = await _transactionService.GetTransactions()
-                .Include(t => t.PaymentType)
-                .Include(t => t.TransactionCategory)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (transaction == null)
-            {
-                return NotFound();
-            }
+        //    var transaction = await _transactionService.GetTransactions()
+        //        .Include(t => t.PaymentType)
+        //        .Include(t => t.TransactionCategory)
+        //        .FirstOrDefaultAsync(m => m.Id == id);
+        //    if (transaction == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(transaction);
-        }
+        //    return View(transaction);
+        //}
 
-        // POST: Transaction/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            _transactionService.DeleteTransaction(id);
-            return RedirectToAction(nameof(Index));
-        }
+        //// POST: Transaction/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    _transactionService.DeleteTransaction(id);
+        //    return RedirectToAction(nameof(Index));
+        //}
 
-        private bool TransactionExists(int id)
-        {
-            return _transactionService.GetTransactions().Any(e => e.Id == id);
-        }
+        //private bool TransactionExists(int id)
+        //{
+        //    return _transactionService.GetTransactions().Any(e => e.Id == id);
+        //}
 
     
     }

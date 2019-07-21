@@ -31,7 +31,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.PaymentType)
                 </th>
-                <th></th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -51,15 +51,16 @@
                         @Html.DisplayFor(modelItem => item.Price)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.TransactionCategoryId)
+                        @Html.DisplayFor(modelItem => item.TransactionCategory.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.PaymentTypeId)
+                        @Html.DisplayFor(modelItem => item.PaymentType.Name)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
+                        <a asp-controller="File" asp-action="Index" asp-route-id="@item.Id">View receipts</a>
                     </td>
                 </tr>
             }
