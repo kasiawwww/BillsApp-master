@@ -2,4 +2,91 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="view"></div>
+<div class="view">
+    <div class="row">
+        <div class="col-md-12">
+            <h4 class="chart-title">Current Budget Analysis</h4>
+            <div id="chart_BudgetLeft" style="height: 370px; width: 100%;"></div>
+        </div>
+    </div>
+    <hr class="m-t-2">
+    <div class="row">
+        <div class="col-md-6">
+            <h5 class="chart-title">Transactions by Payment Type</h5>
+            <div id="chartContainer1" style="height: 370px; width: 100%;"></div>
+        </div>
+        <div class="col-md-6">
+            <h5 class="chart-title">Transactions by Transaction Category</h5>
+            <div id="chartContainer2" style="height: 370px; width: 100%;"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script>
+        window.onload = function () {
+
+            var chart_paymentType = new CanvasJS.Chart("chartContainer1", {
+                theme: "light2", // "light1", "light2", "dark1", "dark2"
+                exportEnabled: true,
+                animationEnabled: true,
+                backgroundColor: "transparent",
+                data: [{
+                    type: "pie",
+                    startAngle: 160,
+                    toolTipContent: "<b>{label}</b>: {y}%",
+                    indexLabel: "{label} - {y}%",
+                    dataPoints: @Html.Raw(ViewBag.DataPoints_PaymentType)
+	            }]
+            });
+            var chart_transactionCategory = new CanvasJS.Chart("chartContainer2", {
+                theme: "light2", // "light1", "light2", "dark1", "dark2"
+                exportEnabled: true,
+                animationEnabled: true,
+                backgroundColor: "transparent",
+                data: [{
+                    type: "pie",
+                    startAngle: 160,
+                    toolTipContent: "<b>{label}</b>: {y}%",
+                    indexLabel: "{label} - {y}%",
+                    dataPoints: @Html.Raw(ViewBag.DataPoints_TransactionCategory)
+	            }]
+            });
+
+            var chart_BudgetLeft = new CanvasJS.Chart("chart_BudgetLeft", {
+                animationEnabled: true,
+                exportEnabled: true,
+                backgroundColor: "transparent",
+                title: {
+                    fontColor: "#848484",
+                    fontSize: 60,
+                    horizontalAlign: "center",
+                    text: @ViewBag.DataPoints_BudgetMoneyLeft +" PLN",
+                    verticalAlign: "center"
+                },
+                toolTip: {
+                    backgroundColor: "#ffffff",
+                    borderThickness: 0,
+                    cornerRadius: 0,
+                    fontColor: "#424242"
+                },
+                data: [
+                    {
+                        explodeOnClick: false,
+                        innerRadius: "90%",
+                        radius: "100%",
+                        startAngle: 270,
+                        type: "doughnut",
+                        toolTipContent: "<b>{label}</b>: {y}zł",
+                        dataPoints:@Html.Raw(ViewBag.DataPoints_Budget)
+                    }
+                ]
+            });
+            chart_paymentType.render();
+            chart_transactionCategory.render();
+            chart_BudgetLeft.render();
+        }
+    </script>
+}

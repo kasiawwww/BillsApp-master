@@ -18,12 +18,16 @@ namespace BillsAppServices
         private readonly ApplicationDbContext _context;
         private IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly PaymentTypeService _paymentTypeService;
+        private readonly TransactionCategoryService _transactionCategoryService;
 
-        public TransactionService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public TransactionService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper, PaymentTypeService paymentTypeService, TransactionCategoryService transactionCategoryService)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _transactionCategoryService = transactionCategoryService;
+            _paymentTypeService = paymentTypeService;
         }
 
         private string GetCurrentUserId()
@@ -59,6 +63,13 @@ namespace BillsAppServices
         public IQueryable<Transaction> GetTransactions()
         {
             var transactions = _context.Transactions.Where(t => t.UserId == GetCurrentUserId());//.Include(t => t.PaymentType).Include(t => t.TransactionCategory);
+            foreach (var item in transactions)
+            {
+                if (item.PaymentTypeId != null)
+                    item.PaymentType = _paymentTypeService.GetPaymentType((int)item.PaymentTypeId);
+                if (item.TransactionCategoryId != null)
+                    item.TransactionCategory = _transactionCategoryService.GetTransactionCategory((int)item.TransactionCategoryId);
+            }
             return transactions;
 
         }

@@ -5,11 +5,11 @@
 }
 
 <div class="view">
-    <h3>Transactions</h3>
 
-    <p>
-        <a asp-action="Create">Create New  <i class="fas fa-plus"></i></a>
-    </p>
+        <h3>Transactions</h3>
+        <p>
+            <a asp-action="Create">Create New  <i class="fas fa-plus"></i></a>
+        </p>
     <table class="table">
         <thead>
             <tr>
@@ -60,7 +60,8 @@
                         @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
-                        <a asp-controller="File" asp-action="Index" asp-route-id="@item.Id">View receipts</a>
+                        <a asp-controller="File" asp-action="Index" asp-route-id="@item.Id">View receipt</a><br/>
+                        <a asp-controller="TransactionElement" asp-action="Index" asp-route-id="@item.Id">View transaction elements</a>
                     </td>
                 </tr>
             }

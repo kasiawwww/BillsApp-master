@@ -10,9 +10,7 @@ namespace BillsAppDatabase
         [Required]
         public string Name { get; set; }
         [Required]
-        public int UnitId { get; set; }
-        public virtual Unit Unit { get; set; }
-        
+        public string Unit { get; set; }     
         public virtual ICollection<TransactionElement> TransactionElements { get; set; }
     }
 }

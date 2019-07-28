@@ -23,9 +23,9 @@ namespace BillsApp.DTOs
 
         [Required]
         public decimal Price { get; set; }
-        public string TransactionCategory { get; set; }
+        public int TransactionCategoryId { get; set; }
 
-        public string PaymentType { get; set; }
+        public int PaymentTypeId { get; set; }
 
         public List<TransactionElementDTO> Elements { get; set; }
 

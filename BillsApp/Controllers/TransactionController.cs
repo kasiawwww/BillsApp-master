@@ -24,29 +24,18 @@ namespace BillsApp.Controllers
         private readonly TransactionService _transactionService;
         private readonly TransactionCategoryService _transactionCategoryService;
         private readonly PaymentTypeService _paymentTypeService;
-        private readonly UnitService _unitService;
-        private readonly IMapper _mapper;
 
-        public TransactionController(TransactionService transactionService, TransactionCategoryService transactionCategoryService, PaymentTypeService paymentTypeService, IMapper mapper, UnitService unitService)
+        public TransactionController(TransactionService transactionService, TransactionCategoryService transactionCategoryService, PaymentTypeService paymentTypeService)
         {
             _transactionService = transactionService;
             _transactionCategoryService = transactionCategoryService;
             _paymentTypeService = paymentTypeService;
-            _unitService = unitService;
-            _mapper = mapper;
         }
 
         // GET: Transaction
         public async Task<IActionResult> Index()
         {
             var transactions = _transactionService.GetTransactions().ToList();
-            foreach (var item in transactions)
-            {
-                if (item.PaymentTypeId != null)
-                    item.PaymentType = _paymentTypeService.GetPaymentType((int)item.PaymentTypeId);
-                if (item.TransactionCategoryId != null)
-                    item.TransactionCategory = _transactionCategoryService.GetTransactionCategory((int)item.TransactionCategoryId);
-            }
             return View(transactions);
         }
 
@@ -86,27 +75,14 @@ namespace BillsApp.Controllers
         public IActionResult Create(TransactionDTO transactionDTO)
         {
             int transactionId;
-            List<TransactionElement> transactionElementsList = new List<TransactionElement>();
-            if (Request.Form["AddElement"].Any())
+            if (ModelState.IsValid)
             {
-                //Dodawanie elemetu do listy
-                transactionDTO.Elements.Add(new TransactionElementDTO());
-                ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transactionDTO.PaymentType);
-                ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transactionDTO.TransactionCategory);
-                foreach (var item in transactionDTO.Elements)
-                    ViewBag.Units = new SelectList(_unitService.GetUnits(), "Id", "Name");
+               _transactionService.AddTransaction(transactionDTO, out transactionId);
+               return RedirectToAction("Create", "File", new { transactionId = transactionId });
             }
-            else if (Request.Form["Create"].Any())
-            {
-                if (ModelState.IsValid)
-                {
-                    _transactionService.AddTransaction(transactionDTO, out transactionId);
-                    return RedirectToAction("Create", "File", new { transactionId = transactionId });
-                }
-                ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transactionDTO.PaymentType);
-                ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transactionDTO.TransactionCategory);
-            }
-
+            ViewData["PaymentTypeId"] = new SelectList(_paymentTypeService.GetPaymentTypes(), "Id", "Name", transactionDTO.PaymentTypeId);
+            ViewData["TransactionCategoryId"] = new SelectList(_transactionCategoryService.GetTransactionCategories(), "Id", "Name", transactionDTO.TransactionCategoryId);
+           
             return View(transactionDTO);           
            // return RedirectToAction("Create", "Transaction");
         }

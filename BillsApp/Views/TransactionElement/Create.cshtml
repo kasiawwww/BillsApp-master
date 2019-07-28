@@ -1,113 +1,147 @@
-﻿@model IEnumerable<BillsApp.DTOs.TransactionElementDTO>
+﻿@model List<BillsApp.DTOs.TransactionElementDTO>
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h2>Create</h2>
+<div class="view">
+    <h3>Add transaction elements</h3>
+    <form asp-action="Create" enctype="multipart/form-data" method="post">
+                <div id="table" class="table-editable">
+                    <span class="table-add float-right mb-3 mr-2">
+                        <a href="#" class="text-success">
+                            <i class="fas fa-plus fa-2x" aria-hidden="true"></i>
+                        </a>
+                    </span>
+                    <table class="table table-bordered table-responsive-md table-striped text-center">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Product Name</th>
+                                <th class="text-center">Price</th>
+                                <th class="text-center">Amount</th>
+                                <th class="text-center">Unit</th>
+                                <th class="text-center">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+        </div>
+        <!-- Editable table -->
 
-<h4>TransactionElement</h4>
-<table id="tblTransactionElements" class="table" cellpadding="0" cellspacing="0">
-    <thead>
-        <tr>
-            <th style="width:150px">Product</th>
-            <th style="width:150px">Price</th>
-            <th style="width:150px">Amount</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-        <tr>
-            <td>@item.ProductName</td>
-            <td>@item.Price</td>
-            <td>@item.Amount</td>
-            <td><input type="button" value="Remove" onclick="Remove(this)" /></td>
-        </tr>
-        }
-    </tbody>
-    <tfoot>
-        <tr>
-            <td><input type="text" id="txtProduct" /></td>
-            <td><input type="number" id="txtPrice" /></td>
-            <td><input type="number" id="txtAmount" /></td>
-            <td><input type="button" id="btnAdd" value="Add" /></td>
-        </tr>
-    </tfoot>
-</table>
-<br />
-<input type="button" id="btnSave" value="Save All" />
+        <div class="form-group">
+            <input type="button" id="export-btn" value="Finish" name="Finish" class="btn btn-default" />
+        </div>
+    </form>
+</div>
+
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
 <script type="text/javascript">
-    debugger;
-        $("body").on("click", "#btnAdd", function () {
-            var txtProduct = $("#txtProduct");
-            var txtPrice = $("#txtPrice");
-            var txtAmount = $("#txtAmount");
+    $(document).ready(function () {
+        const $tableID = $('#table');
+        const $BTN = $('#export-btn');
 
-            var tBody = $("#tblTransactionElements > TBODY")[0];
+        const newTr = `<tr class="hide">
+       <td class="pt-3-half" contenteditable="true"></td>
+       <td class="pt-3-half" contenteditable="true"></td>
+       <td class="pt-3-half" contenteditable="true"></td>
+       <td class="pt-3-half" contenteditable="true"></td>
+       <td>
+         <span class="table-remove"><button type="button" class="btn btn-danger btn-rounded btn-sm my-0 waves-effect waves-light">Remove</button></span>
+       </td>
+     </tr>`;
 
-            var row = tBody.insertRow(-1);
+        $('.table-add').on('click', () => {
 
-            var cell = $(row.insertCell(-1));
-            cell.html(txtProduct.val());
-
-            cell = $(row.insertCell(-1));
-            cell.html(txtPrice.val());
-
-            cell = $(row.insertCell(-1));
-            cell.html(txtAmount.val());
-
-            cell = $(row.insertCell(-1));
-            var btnRemove = $("<input />");
-            btnRemove.attr("type", "button");
-            btnRemove.attr("onclick", "Remove(this);");
-            btnRemove.val("Remove");
-            cell.append(btnRemove);
-
-            //Clear the TextBoxes.
-            txtProduct.val("");
-            txtPrice.val("");
-            txtAmount.val("");
+            $('tbody').append(newTr);
 
         });
 
-        function Remove(button) {
-            var row = $(button).closest("TR");
-            var name = $("TD", row).eq(0).html();
-            if (confirm("Do you want to delete: " + name)) {
-                var table = $("#tblTransactionElements")[0];
+        $tableID.on('click', '.table-remove', function () {
 
-                table.deleteRow(row[0].rowIndex);
-            }
-        };
+            $(this).parents('tr').detach();
+        });
 
-        $("body").on("click", "#btnSave", function () {
-            var transactionElements = new Array();
-            debugger;
-            $("#tblTransactionElements TBODY TR").each(function () {
-                var row = $(this);
-                var transactionElelemt = {};
-                transactionElelemt.Product = row.find("TD").eq(0).html();
-                transactionElelemt.Price = row.find("TD").eq(1).html();
-                transactionElelemt.Amount = row.find("TD").eq(2).html();
 
-                transactionElements.push(transactionElelemt);
+        // A few jQuery helpers for exporting only
+        jQuery.fn.pop = [].pop;
+        jQuery.fn.shift = [].shift;
+
+        $BTN.on('click', () => {
+
+            const $rows = $tableID.find('tr:not(:hidden)');
+            const headers = [];
+            const data = [];
+
+            // Get the headers (add special header logic here)
+            $($rows.shift()).find('th:not(:empty)').each(function () {
+
+                headers.push($(this).text().toLowerCase());
             });
 
-            var data = JSON.stringify({ elements: transactionElements });
-            //Send the JSON array to Controller using AJAX.
-            $.ajax({
-                type: "POST",
-                url: "Create",
-                data: data,
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (r) {
-                    alert(r + " record(s) inserted.");
+            // Turn all existing rows into a loopable array
+            $rows.each(function () {
+                const $td = $(this).find('td');
+                const h = {};
+
+                // Use the headers from earlier to name our hash keys
+                headers.forEach((header, i) => {
+
+                    h[header] = $td.eq(i).text();
+                });
+
+                data.push(h);
+            });
+
+            var getUrlParameter = function getUrlParameter(sParam) {
+                var sPageURL = window.location.search.substring(1),
+                    sURLVariables = sPageURL.split('&'),
+                    sParameterName,
+                    i;
+
+                for (i = 0; i < sURLVariables.length; i++) {
+                    sParameterName = sURLVariables[i].split('=');
+
+                    if (sParameterName[0] === sParam) {
+                        return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                    }
                 }
-            });
+            };
+
+            $("body").on("click", "#export-btn", function () {
+
+                var transactionId = getUrlParameter('transactionId');
+                // Output the result
+                var elements = new Array();
+                $("#table TBODY TR").each(function () {
+                    var row = $(this);
+                    var trElement = {};
+                    trElement.ProductName = row.find("TD").eq(0).html();
+                    trElement.Price = row.find("TD").eq(1).html();
+                    trElement.Amount = row.find("TD").eq(2).html();
+                    trElement.Unit = row.find("TD").eq(3).html();
+                    trElement.transactionId = transactionId;
+                    elements.push(trElement);
+                });
+
+                var data = JSON.stringify(elements);
+                $.ajax({
+                    url: 'Create',
+                    data: data,
+                    contentType: "application/json; charset=utf-8",
+                    type: "POST",
+                    success: function (data) {
+                        url = window.location.href;
+                        url = url.replace("TransactionElement/Create?transactionId=" + transactionId+"#", "Transaction");
+                        location.href = url; 
+                    }
+                });
+            })
         });
+    })
 </script>
+
+
+
+
+

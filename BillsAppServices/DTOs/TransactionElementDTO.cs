@@ -16,5 +16,7 @@ namespace BillsApp.DTOs
         public int Amount { get; set; }
         [Required]
         public string Unit { get; set; }
+        [Required]
+        public int TransactionId { get; set; }
     }
 }

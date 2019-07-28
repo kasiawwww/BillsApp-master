@@ -13,6 +13,7 @@ namespace BillsAppDatabase
         public decimal Price { get; set; }
         [Required]
         public int Amount { get; set; }
+        public int ProductId { get; set; }
         public virtual Product Product { get; set; }
     }
 }

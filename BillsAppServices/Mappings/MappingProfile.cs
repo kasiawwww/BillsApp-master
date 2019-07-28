@@ -22,6 +22,8 @@ namespace BillsApp.Mappings
             CreateMap<FileDTO, File>();
             CreateMap<TransactionCategory, TransactionCategoryDTO>();
             CreateMap<TransactionCategoryDTO, TransactionCategory>();
+            CreateMap<Budget, BudgetDTO>();
+            CreateMap<BudgetDTO, Budget>();
         }
     }
 }

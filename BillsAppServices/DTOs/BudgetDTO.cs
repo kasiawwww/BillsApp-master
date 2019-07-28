@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace BillsAppDatabase
+namespace BillsAppServices.DTOs
 {
-    public class Budget: Entity
+    public class BudgetDTO
     {
         [Required]
         public string Name { get; set; }
@@ -15,12 +15,5 @@ namespace BillsAppDatabase
         public DateTime From { get; set; }
         [Required]
         public DateTime To { get; set; }
-        [Required]
-        public DateTime CreatedDate { get; set; }
-        [Required]
-        public DateTime ModificationDate { get; set; }
-        public string UserId { get; set; }
-        public virtual User User { get; set; }
-
     }
 }

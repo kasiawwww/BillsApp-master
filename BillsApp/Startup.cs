@@ -18,7 +18,7 @@ using BillsAppDatabase;
 using BillsApp.DTOs;
 using BillsApp.Mappings;
 using Newtonsoft.Json.Serialization;
-
+using BillsAppServices.DTOs;
 
 namespace BillsApp
 {
@@ -61,15 +61,15 @@ namespace BillsApp
                     .AddJsonOptions(options =>
                      options.SerializerSettings.ContractResolver = new DefaultContractResolver());
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IConfiguration>(Configuration);
 
             services.AddScoped<TransactionService>();
             services.AddScoped<TransactionCategoryService>();
             services.AddScoped<PaymentTypeService>();
-            services.AddScoped<UnitService>();
             services.AddScoped<FileService>();
-
-            services.AddKendo();
-
+            services.AddScoped<BudgetService>();
+            services.AddScoped<TransactionElementService>();
+            services.AddScoped<ChartService>();
 
         }
 

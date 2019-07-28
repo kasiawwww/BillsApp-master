@@ -14,23 +14,23 @@ using Microsoft.AspNetCore.Authorization;
 namespace BillsApp.Controllers
 {
     [Authorize]
-    public class TransactionCategoryController : Controller
+    public class BudgetController : Controller
     {
-        private readonly TransactionCategoryService _transactionCategoryService;
+        private readonly BudgetService _budgetService;
 
-        public TransactionCategoryController(TransactionCategoryService transactionCategoryService)
+        public BudgetController(BudgetService budgetService)
         {
-            _transactionCategoryService = transactionCategoryService;
+            _budgetService = budgetService;
         }
 
-        // GET: TransactionCategory
+        // GET: Budget
         public async Task<IActionResult> Index()
         {
-            var transactionCategoryDTOs = _transactionCategoryService.GetTransactionCategories();
-            return View(transactionCategoryDTOs);
+            var budgets = _budgetService.GetBudgets().ToList();
+            return View(budgets);
         }
 
-        //// GET: TransactionCategory/Details/5
+        //// GET: Budget/Details/5
         //public async Task<IActionResult> Details(int? id)
         //{
         //    if (id == null)
@@ -38,38 +38,38 @@ namespace BillsApp.Controllers
         //        return NotFound();
         //    }
 
-        //    var transactionCategory = await _context.TransactionCategories
+        //    var budget = await _context.Budgets
         //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (transactionCategory == null)
+        //    if (budget == null)
         //    {
         //        return NotFound();
         //    }
 
-        //    return View(transactionCategory);
+        //    return View(budget);
         //}
 
-        // GET: TransactionCategory/Create
+        // GET: Budget/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: TransactionCategory/Create
+        // POST: Budget/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TransactionCategoryDTO transactionCategoryDTO)
+        public async Task<IActionResult> Create([Bind("Name,Amount,From,To,CreatedDate,ModificationDate,UserId,Id")] BudgetDTO budgetDTO)
         {
             if (ModelState.IsValid)
             {
-                _transactionCategoryService.AddTransactionCategory(transactionCategoryDTO);
+                _budgetService.AddBudget(budgetDTO);
                 return RedirectToAction(nameof(Index));
             }
-            return View(transactionCategoryDTO);
+            return View(budgetDTO);
         }
 
-        //// GET: TransactionCategory/Edit/5
+        //// GET: Budget/Edit/5
         //public async Task<IActionResult> Edit(int? id)
         //{
         //    if (id == null)
@@ -77,22 +77,22 @@ namespace BillsApp.Controllers
         //        return NotFound();
         //    }
 
-        //    var transactionCategory = await _context.TransactionCategories.FindAsync(id);
-        //    if (transactionCategory == null)
+        //    var budget = await _context.Budgets.FindAsync(id);
+        //    if (budget == null)
         //    {
         //        return NotFound();
         //    }
-        //    return View(transactionCategory);
+        //    return View(budget);
         //}
 
-        //// POST: TransactionCategory/Edit/5
+        //// POST: Budget/Edit/5
         //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         //[HttpPost]
         //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("Name,Id")] TransactionCategoryDTO transactionCategory)
+        //public async Task<IActionResult> Edit(int id, [Bind("Name,Amount,From,To,CreatedDate,ModificationDate,UserId,Id")] Budget budget)
         //{
-        //    if (id != transactionCategory.Id)
+        //    if (id != budget.Id)
         //    {
         //        return NotFound();
         //    }
@@ -101,12 +101,12 @@ namespace BillsApp.Controllers
         //    {
         //        try
         //        {
-        //            _context.Update(transactionCategory);
+        //            _context.Update(budget);
         //            await _context.SaveChangesAsync();
         //        }
         //        catch (DbUpdateConcurrencyException)
         //        {
-        //            if (!TransactionCategoryExists(transactionCategory.Id))
+        //            if (!BudgetExists(budget.Id))
         //            {
         //                return NotFound();
         //            }
@@ -117,10 +117,10 @@ namespace BillsApp.Controllers
         //        }
         //        return RedirectToAction(nameof(Index));
         //    }
-        //    return View(transactionCategory);
+        //    return View(budget);
         //}
 
-        //// GET: TransactionCategory/Delete/5
+        //// GET: Budget/Delete/5
         //public async Task<IActionResult> Delete(int? id)
         //{
         //    if (id == null)
@@ -128,30 +128,30 @@ namespace BillsApp.Controllers
         //        return NotFound();
         //    }
 
-        //    var transactionCategory = await _context.TransactionCategories
+        //    var budget = await _context.Budgets
         //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (transactionCategory == null)
+        //    if (budget == null)
         //    {
         //        return NotFound();
         //    }
 
-        //    return View(transactionCategory);
+        //    return View(budget);
         //}
 
-        //// POST: TransactionCategory/Delete/5
+        //// POST: Budget/Delete/5
         //[HttpPost, ActionName("Delete")]
         //[ValidateAntiForgeryToken]
         //public async Task<IActionResult> DeleteConfirmed(int id)
         //{
-        //    var transactionCategory = await _context.TransactionCategories.FindAsync(id);
-        //    _context.TransactionCategories.Remove(transactionCategory);
+        //    var budget = await _context.Budgets.FindAsync(id);
+        //    _context.Budgets.Remove(budget);
         //    await _context.SaveChangesAsync();
         //    return RedirectToAction(nameof(Index));
         //}
 
-        //private bool TransactionCategoryExists(int id)
+        //private bool BudgetExists(int id)
         //{
-        //    return _context.TransactionCategories.Any(e => e.Id == id);
+        //    return _context.Budgets.Any(e => e.Id == id);
         //}
     }
 }

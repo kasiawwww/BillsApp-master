@@ -4,14 +4,16 @@ using BillsAppDatabase.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BillsAppDatabase.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190721174352_Budget_delete_tr_cat")]
+    partial class Budget_delete_tr_cat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,11 +40,13 @@ namespace BillsAppDatabase.Data.Migrations
 
                     b.Property<DateTime>("To");
 
-                    b.Property<string>("UserId");
+                    b.Property<int>("UserId");
+
+                    b.Property<string>("UserId1");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId1");
 
                     b.ToTable("Budgets");
                 });
@@ -98,10 +102,11 @@ namespace BillsAppDatabase.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<string>("Unit")
-                        .IsRequired();
+                    b.Property<int>("UnitId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UnitId");
 
                     b.ToTable("Products");
                 });
@@ -166,11 +171,7 @@ namespace BillsAppDatabase.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<string>("UserId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("TransactionCategories");
                 });
@@ -185,7 +186,7 @@ namespace BillsAppDatabase.Data.Migrations
 
                     b.Property<decimal>("Price");
 
-                    b.Property<int>("ProductId");
+                    b.Property<int?>("ProductId");
 
                     b.Property<int>("TransactionId");
 
@@ -437,7 +438,7 @@ namespace BillsAppDatabase.Data.Migrations
                 {
                     b.HasOne("BillsAppDatabase.User", "User")
                         .WithMany("Budgets")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId1");
                 });
 
             modelBuilder.Entity("BillsAppDatabase.File", b =>
@@ -445,6 +446,14 @@ namespace BillsAppDatabase.Data.Migrations
                     b.HasOne("BillsAppDatabase.Transaction", "Transaction")
                         .WithMany("Files")
                         .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("BillsAppDatabase.Product", b =>
+                {
+                    b.HasOne("BillsAppDatabase.Unit", "Unit")
+                        .WithMany()
+                        .HasForeignKey("UnitId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -464,19 +473,11 @@ namespace BillsAppDatabase.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("BillsAppDatabase.TransactionCategory", b =>
-                {
-                    b.HasOne("BillsAppDatabase.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("BillsAppDatabase.TransactionElement", b =>
                 {
                     b.HasOne("BillsAppDatabase.Product", "Product")
                         .WithMany("TransactionElements")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ProductId");
 
                     b.HasOne("BillsAppDatabase.Transaction", "Transaction")
                         .WithMany("TransactionElements")

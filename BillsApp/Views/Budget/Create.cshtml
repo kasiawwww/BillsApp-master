@@ -1,16 +1,17 @@
-﻿@model BillsApp.DTOs.FileDTO
+﻿@model BillsAppServices.DTOs.BudgetDTO
 
 @{
     ViewData["Title"] = "Create";
 }
 
 <div class="view">
+    <h3>Create</h3>
 
-    <h4>Add File</h4>
+    <h4>Budget</h4>
     <hr />
     <div class="row">
         <div class="col-md-4">
-            <form asp-action="Create" enctype="multipart/form-data" method="post">
+            <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Name" class="control-label"></label>
@@ -18,16 +19,21 @@
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="ImageFile" class="control-label"></label>
-                    <input asp-for="ImageFile" class="form-control" />
-                    <span asp-validation-for="ImageFile" class="text-danger"></span>
-                </div>
-                <div class="form-group hide">
-                <label asp-for="TransactionId" class="control-label"></label>
-                <select asp-for="TransactionId" class="form-control" asp-items="ViewBag.TransactionId"></select>
+                    <label asp-for="Amount" class="control-label"></label>
+                    <input asp-for="Amount" class="form-control" />
+                    <span asp-validation-for="Amount" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <input type="submit" value="AddElements" name="AddElements" class="btn btn-default" />
+                    <label asp-for="From" class="control-label"></label>
+                    <input asp-for="From" class="form-control" />
+                    <span asp-validation-for="From" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="To" class="control-label"></label>
+                    <input asp-for="To" class="form-control" />
+                    <span asp-validation-for="To" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-default" />
                 </div>
             </form>
@@ -38,7 +44,6 @@
         <a asp-action="Index">Back to List</a>
     </div>
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

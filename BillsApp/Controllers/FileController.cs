@@ -12,15 +12,17 @@ using BillsApp.DTOs;
 using BillsAppServices;
 using AutoMapper;
 using File = BillsAppDatabase.File;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BillsApp.Controllers
 {
+    [Authorize]
     public class FileController : Controller
     {
         private readonly TransactionService _transactionService;
         private readonly FileService _fileService;
 
-        public FileController(ApplicationDbContext context, TransactionService transactionService, FileService fileService,IMapper mapper)
+        public FileController(TransactionService transactionService, FileService fileService)
         {
             _transactionService = transactionService;
             _fileService = fileService;
@@ -59,8 +61,11 @@ namespace BillsApp.Controllers
             if (ModelState.IsValid)
             {
                 _fileService.AddFiles(fileDTO);
-                return RedirectToAction(nameof(Index));
+                if (Request.Form["AddElements"].Any())
+                    return RedirectToAction("Create", "TransactionElement", new { transactionId = fileDTO.TransactionId });
+                return RedirectToAction("Index", "Transaction");
             }
+          
             return View(fileDTO);
         }
 
